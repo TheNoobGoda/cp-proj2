@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 struct Rabbit
 {
@@ -85,103 +86,81 @@ void read_input(const char *filename){
 
 
 
-void print_gen(struct Rabbit *rabbits, struct Fox *foxes, struct Rock *rocks){
+void print_gen(struct Rabbit *rabbits, struct Fox *foxes, struct Rock *rocks, int size, int g){
     //Generation 0
-    int g=0;
-    printf("Generation 0");
+    printf("Generation %d",g);
     printf("\n");
     printf("-------   ------- -------");
     printf("\n");
-    for (int r=0; r<R; r++){
+
+    for (int i =0; i<size; i++){
         printf("|");
-        // first grid
-        for (int c=0; c<C; c++){
-            char symbol = ' ';
-            //Rabits
-            for (int i=0; i<rabbitCount;i++ ){
-                if(rabbits[i].x==r && rabbits[i].y==c && rabbits[i].gen==g){
-                    symbol= 'R';
-                    break;
+        for (int j =0; j<size; j++){
+            char symbol =' ';
+            for (int k =0; k<rabbitCount;k++){
+                if (rabbits[k].x == i && rabbits[k].y == j){
+                    symbol = 'R';
                 }
             }
-            //Foxes
-            for (int i=0; i<foxCount;i++ ){
-                if(foxes[i].x==r && foxes[i].y==c && foxes[i].gen==g){
-                    symbol= 'F';
-                    break;
+            for (int k =0; k<foxCount;k++){
+                if (foxes[k].x == i && foxes[k].y == j){
+                    symbol = 'F';
                 }
             }
-            //Rocks
-            for (int i=0; i<rockCount;i++ ){
-                if(rocks[i].x==r && rocks[i].y==c ){
-                    symbol= '*';
-                    break;
+            for (int k =0; k<rockCount;k++){
+                if (rocks[k].x == i && rocks[k].y == j){
+                    symbol = '*';
                 }
             }
-            printf("%c", symbol);
-
+            printf("%c",symbol);
         }
-        printf("|   |" );
-        
-        // second grid
-        for (int c=C; c<C+C; c++){
-            char symbol = ' ';
-            //Rabits
-            for (int i=0; i<rabbitCount;i++ ){
-                if(rabbits[i].x==r && rabbits[i].y==c-C && rabbits[i].gen==g){
-                    symbol = (char)(g + '0');
-                    break;
+        printf("|   |");
+        for (int j =0; j<size; j++){
+            char symbol =' ';
+            for (int k =0; k<rabbitCount;k++){
+                if (rabbits[k].x == i && rabbits[k].y == j){
+                    symbol = rabbits[k].gen +'0';
                 }
             }
-            //Foxes
-            for (int i=0; i<foxCount;i++ ){
-                if(foxes[i].x==r && foxes[i].y==c-C && foxes[i].gen==g){
-                    symbol = (char)(g + '0');
-                    break;
+            for (int k =0; k<foxCount;k++){
+                if (foxes[k].x == i && foxes[k].y == j){
+                    symbol = foxes[k].gen+'0';
                 }
             }
-            //Rocks
-            for (int i=0; i<rockCount;i++ ){
-                if(rocks[i].x==r && rocks[i].y==c-C ){
-                    symbol= '*';
-                    break;
+            for (int k =0; k<rockCount;k++){
+                if (rocks[k].x == i && rocks[k].y == j){
+                    symbol = '*';
                 }
             }
-            printf("%c", symbol);
+            printf("%c",symbol);
         }
-        // third grid
-        printf("| |");
-        for (int c=C+C; c<C+C+C; c++){
-            char symbol = ' ';
-            //Rabits
-            for (int i=0; i<rabbitCount;i++ ){
-                if(rabbits[i].x==r && rabbits[i].y==c-C-C && rabbits[i].gen==g){
-                    symbol= 'R';
-                    break;
+        printf("|   |");
+        for (int j =0; j<size; j++){
+            char symbol =' ';
+            for (int k =0; k<rabbitCount;k++){
+                if (rabbits[k].x == i && rabbits[k].y == j){
+                    symbol = 'R';
                 }
             }
-            //Foxes---> Dúvidas!!!!!!!
-            for (int i=0; i<foxCount;i++ ){
-                if(foxes[i].x==r && foxes[i].y==c-C-C && foxes[i].gen==g){
-                    symbol = (char)(g + '0');
-                    break;
+            for (int k =0; k<foxCount;k++){
+                if (foxes[k].x == i && foxes[k].y == j){
+                    int food = GEN_FOOD_FOXES-foxes[k].food;
+                    symbol = food+'0';
                 }
             }
-            //Rocks
-            for (int i=0; i<rockCount;i++ ){
-                if(rocks[i].x==r && rocks[i].y==c-C-C ){
-                    symbol= '*';
-                    break;
+            for (int k =0; k<rockCount;k++){
+                if (rocks[k].x == i && rocks[k].y == j){
+                    symbol = '*';
                 }
             }
-            printf("%c", symbol);
+            printf("%c",symbol);
         }
-        printf("|" );
-        printf("\n");
-        if (r == R - 1) {
-            printf("-------   ------- -------\n");}
-
+        printf("|\n");
     }
+
+    printf("-------   ------- -------");
+    printf("\n");
+
 }
 
 
@@ -196,6 +175,8 @@ void print_gen(struct Rabbit *rabbits, struct Fox *foxes, struct Rock *rocks){
 int main() {
     const char *filename = "ecosystem_examples/input5x5";
     read_input(filename);
-    print_gen(rabbits, foxes, rocks);
+    rabbits[0].gen = 1;
+    foxes[0].food = 2;
+    print_gen(rabbits, foxes, rocks, C, 0);
 }
 
