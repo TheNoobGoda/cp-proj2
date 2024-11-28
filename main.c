@@ -167,9 +167,26 @@ void print_gen(struct Rabbit *rabbits, struct Fox *foxes, struct Rock *rocks, in
 
 
 
-//void print_output(){
-    
-//}
+void store_output(const char *filename){
+    FILE *file;
+    char buffer[256];
+    file = fopen(filename, "w");
+
+    fprintf(file, "%d %d %d %d %d %d %d\n", GEN_PROC_RABBITS, GEN_PROC_FOXES, GEN_FOOD_FOXES, N_GEN, R, C, N);
+
+    for (int i =0; i<rockCount; i++){
+        fprintf(file, "ROCK %d %d\n", rocks[i].x, rocks[i].y);
+    }
+
+    for (int i =0; i<rabbitCount; i++){
+        fprintf(file, "RABBIT %d %d\n", rabbits[i].x, rabbits[i].y);
+    }
+    for (int i =0; i<foxCount; i++){
+        fprintf(file, "FOX %d %d\n", foxes[i].x, foxes[i].y);
+    }
+
+    fclose(file);
+}
 
 
 int main() {
@@ -178,5 +195,6 @@ int main() {
     rabbits[0].gen = 1;
     foxes[0].food = 2;
     print_gen(rabbits, foxes, rocks, C, 0);
+    store_output("output");
 }
 
