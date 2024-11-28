@@ -199,4 +199,3 @@ int main() {
     print_gen(rabbits, foxes, rocks);
 }
 
-//|* R F|   |* 0 0   | |* R 0    |
