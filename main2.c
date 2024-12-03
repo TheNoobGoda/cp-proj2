@@ -100,6 +100,37 @@ void print_gen(int g, Object **matrix){
 
 }
 
+void store_output(const char *filename, Object **matrix){
+    FILE *file;
+    char buffer[256];
+    file = fopen(filename, "w");
+
+    fprintf(file, "%d %d %d %d %d %d %d\n", GEN_PROC_RABBITS, GEN_PROC_FOXES, GEN_FOOD_FOXES, N_GEN, R, C, N);
+
+    for (int i=0; i<R; i++){
+        for (int j=0; j<C ;j++){
+            switch (matrix[i][j].type)
+            {
+            case 0:
+                break;
+            case 1:
+                fprintf(file, "RABBIT %d %d\n", i, j);
+                break;
+            case 2:
+                fprintf(file, "FOX %d %d\n", i, j);
+                break;
+            case 3:
+                fprintf(file, "ROCK %d %d\n", i, j);
+                break;
+            
+            default:
+                break;
+            }
+        }
+    }
+    fclose(file);
+}
+
 int main(){
     const char *filename = "ecosystem_examples/input5x5";
     Object *rows;
@@ -154,6 +185,7 @@ int main(){
     }
     fclose(file);
     print_gen(0, matrix);
+    store_output("output", matrix);
 
     free(matrix);
     free(rows);
