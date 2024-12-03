@@ -2,23 +2,17 @@
 #include <string.h>
 #include <stdlib.h>
 
-struct Object{
-    int n;
+typedef struct{
+    int type;
     int gen;
-    int x;
-    int y;
     int food;
-};
-
-struct Object *rabbits;
-struct Object *foxes;
-struct Object *rocks;
+} Object;
 
 
 int GEN_PROC_RABBITS, GEN_PROC_FOXES, GEN_FOOD_FOXES, N_GEN, R, C, N;
-int rabbitCount = 0, foxCount = 0, rockCount = 0;
+int objectCount = 0;
 
-void print_gen(int g){
+void print_gen(int g, Object **matrix){
     //Generation 0
     printf("Generation %d",g);
     printf("\n");
@@ -28,62 +22,73 @@ void print_gen(int g){
     for (int i =0; i<R; i++){
         printf("|");
         for (int j =0; j<C; j++){
-            char symbol =' ';
-            for (int k =0; k<rabbitCount;k++){
-                if (rabbits[k].x == i && rabbits[k].y == j){
-                    symbol = 'R';
-                }
-            }
-            for (int k =0; k<foxCount;k++){
-                if (foxes[k].x == i && foxes[k].y == j){
-                    symbol = 'F';
-                }
-            }
-            for (int k =0; k<rockCount;k++){
-                if (rocks[k].x == i && rocks[k].y == j){
-                    symbol = '*';
-                }
-            }
-            printf("%c",symbol);
-        }
-        printf("|   |");
-        for (int j =0; j<R; j++){
-            char symbol =' ';
-            for (int k =0; k<rabbitCount;k++){
-                if (rabbits[k].x == i && rabbits[k].y == j){
-                    symbol = rabbits[k].gen +'0';
-                }
-            }
-            for (int k =0; k<foxCount;k++){
-                if (foxes[k].x == i && foxes[k].y == j){
-                    symbol = foxes[k].gen+'0';
-                }
-            }
-            for (int k =0; k<rockCount;k++){
-                if (rocks[k].x == i && rocks[k].y == j){
-                    symbol = '*';
-                }
+            char symbol;
+            switch (matrix[i][j].type)
+            {
+            case 0:
+                symbol = ' ';
+                break;
+            case 1:
+                symbol = 'R';
+                break;
+            case 2:
+                symbol = 'F';
+                break;
+            case 3:
+                symbol = '*';
+                break;
+            
+            default:
+                symbol = ' ';
+                break;
             }
             printf("%c",symbol);
         }
         printf("|   |");
         for (int j =0; j<R; j++){
-            char symbol =' ';
-            for (int k =0; k<rabbitCount;k++){
-                if (rabbits[k].x == i && rabbits[k].y == j){
-                    symbol = 'R';
-                }
+            char symbol;
+            switch (matrix[i][j].type)
+            {
+            case 0:
+                symbol = ' ';
+                break;
+            case 1:
+                symbol = matrix[i][j].gen+'0';
+                break;
+            case 2:
+                symbol = matrix[i][j].gen+'0';
+                break;
+            case 3:
+                symbol = '*';
+                break;
+            
+            default:
+                symbol = ' ';
+                break;
             }
-            for (int k =0; k<foxCount;k++){
-                if (foxes[k].x == i && foxes[k].y == j){
-                    int food = GEN_FOOD_FOXES-foxes[k].food;
-                    symbol = food+'0';
-                }
-            }
-            for (int k =0; k<rockCount;k++){
-                if (rocks[k].x == i && rocks[k].y == j){
-                    symbol = '*';
-                }
+            printf("%c",symbol);
+        }
+        printf("|   |");
+        for (int j =0; j<R; j++){
+            char symbol;
+            switch (matrix[i][j].type)
+            {
+            case 0:
+                symbol = ' ';
+                break;
+            case 1:
+                symbol = 'R';
+                break;
+            case 2:
+                symbol = (GEN_FOOD_FOXES-matrix[i][j].food) +'0';
+                break;
+            case 3:
+                symbol = '*';
+                break;
+            
+            default:
+                symbol = ' ';
+                break;
             }
             printf("%c",symbol);
         }
@@ -97,8 +102,8 @@ void print_gen(int g){
 
 int main(){
     const char *filename = "ecosystem_examples/input5x5";
-    int *rows;
-    int **matrix;
+    Object *rows;
+    Object **matrix;
 
     // read file
     FILE *file;
@@ -118,17 +123,13 @@ int main(){
        
     }
 
-    rabbits = malloc(R * C * sizeof(struct Object));
-    foxes = malloc(R * C * sizeof(struct Object));
-    rocks = malloc(R * C * sizeof(struct Object));
 
-
-    rows = malloc(R * C *sizeof(int));
-    matrix = malloc(R * sizeof(int*));
+    rows = malloc(R * C *sizeof(Object));
+    matrix = malloc(R * sizeof(Object*));
     for (int i=0; i<R; i++){
         matrix[i] =&rows[i*C]; 
         for (int j=0; j<C; j++){
-            matrix[i][j] = 0;
+            matrix[i][j].type = 0;
         }
     }
 
@@ -140,33 +141,19 @@ int main(){
         // Parse the object type and its coordinates
         if (sscanf(buffer, "%s %d %d", type, &x, &y) == 3) {
             if (strcmp(type, "RABBIT") == 0) {
-                rabbits[rabbitCount].n = rabbitCount;
-                rabbits[rabbitCount].gen = 0; 
-                rabbits[rabbitCount].x = x;
-                rabbits[rabbitCount].y = y;
-                matrix[x][y] = 1;
-                rabbitCount++;
+                matrix[x][y].type = 1;
+                matrix[x][y].gen = 0;
             } else if (strcmp(type, "FOX") == 0) {
-                foxes[foxCount].n = foxCount;
-                foxes[foxCount].gen = 0;  
-                foxes[foxCount].x = x;
-                foxes[foxCount].y = y;
-                foxes[foxCount].food = GEN_FOOD_FOXES; // Initial food level
-                matrix[x][y] = 2;
-                foxCount++;
+                matrix[x][y].type = 2;
+                matrix[x][y].gen = 0;
+                matrix[x][y].food = GEN_FOOD_FOXES;
             } else if (strcmp(type, "ROCK") == 0) {
-                rocks[rockCount].n = rockCount;
-                rocks[rockCount].x = x;
-                rocks[rockCount].y = y;
-                matrix[x][y] = 3;
-                rockCount++;
+                matrix[x][y].type = 3;
             }
         }
     }
     fclose(file);
-    printf("%d %d %d %d %d %d %d\n", GEN_PROC_RABBITS, GEN_PROC_FOXES, GEN_FOOD_FOXES, N_GEN, R, C, N);
-
-    print_gen(0);
+    print_gen(0, matrix);
 
     free(matrix);
     free(rows);
