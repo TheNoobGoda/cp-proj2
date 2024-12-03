@@ -73,19 +73,23 @@ int main(){
 
     int *rows = malloc(10 * 5 *sizeof(int));
     int **matrix = malloc(10 * sizeof(int*));
-    for (int i=0; i>10; i++){
+    for (int i=0; i<10; i++){
         matrix[i] =&rows[i*5]; 
     }
 
-    for (int i=0; i>10; i++){
-        for (int j=0;j>5;j++){
+    for (int i=0; i<10; i++){
+        for (int j=0;j<5;j++){
             matrix[i][j] = i+j;
         }
     }
 
-    for (int i=0;i>10*5;i++){
-        printf("%d ",rows[i]);
+    for (int i=0;i<10;i++){
+        for (int j=0;j<5;j++){
+            printf("%d ",matrix[i][j]);
+        }
+        printf("\n");
     }
-    printf('%d',matrix[0][0]);
-    printf("\n");
+
+    free(matrix);
+    free(rows);
 }
