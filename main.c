@@ -336,13 +336,20 @@ void move_rabbits(Object **matrix){
                         new_matrix[new_x][new_y] = matrix[i][j];
                         new_matrix[i][j].type = 0;
                     }
+                    if (new_matrix[new_x][new_y].gen == GEN_PROC_RABBITS){
+                        new_matrix[new_x][new_y].gen = 0;
+                        new_matrix[i][j].type = 1;
+                        new_matrix[i][j].gen = 0;
+                    }
+
+                    new_matrix[new_x][new_y].gen ++;
                 }
                 
             }
         }
     }
 
-    print_gen(current_gen, new_matrix);
+    copy_matrix(matrix, new_matrix);
 
     free(new_rows);
     free(new_matrix);
@@ -402,12 +409,12 @@ int main(){
     }
     fclose(file);
     print_gen(0, matrix);
-
-    move_rabbits(matrix);
     
-    // for (int i =0; i<N_GEN; i++){
-    //     print_gen(i+1, matrix);
-    // }
+    for (int i =0; i<N_GEN; i++){
+        move_rabbits(matrix);
+        current_gen ++;
+        print_gen(current_gen, matrix);
+    }
 
     store_output("output", matrix);
     free(matrix);
