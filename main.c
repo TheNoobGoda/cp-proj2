@@ -198,7 +198,6 @@ void move_rabbits(Object **matrix){
 
                     for (int k=0; k<4; k++){
                         if (moves[k] == 1){
-                            
                             if (move == count){
                                 switch (k)
                                 {
@@ -224,17 +223,17 @@ void move_rabbits(Object **matrix){
                     
                     if (new_matrix[new_x][new_y].type == 1){
                         if (new_matrix[new_x][new_y].gen < matrix[i][j].gen) new_matrix[new_x][new_y] = matrix[i][j];
+                        new_matrix[i][j].type = 0;
                     }else{
                         new_matrix[new_x][new_y] = matrix[i][j];
                         new_matrix[i][j].type = 0;
+                        if (matrix[new_x][new_y].gen == GEN_PROC_RABBITS){
+                            new_matrix[new_x][new_y].gen = 0;
+                            new_matrix[i][j].type = 1;
+                            new_matrix[i][j].gen = 0;
+                        }   
                     }
-                    if (new_matrix[new_x][new_y].gen == GEN_PROC_RABBITS){
-                        new_matrix[new_x][new_y].gen = 0;
-                        new_matrix[i][j].type = 1;
-                        new_matrix[i][j].gen = 0;
-                    }
-
-                    new_matrix[new_x][new_y].gen ++; // fix later
+                    
                 }
                 
             }
@@ -334,24 +333,22 @@ void move_foxes(Object **matrix){
                     }
                     if (new_matrix[new_x][new_y].type == 2){
                         if (new_matrix[new_x][new_y].gen < matrix[i][j].gen) new_matrix[new_x][new_y] = matrix[i][j];
+                        new_matrix[i][j].type = 0;
                     }else{
                         new_matrix[new_x][new_y] = matrix[i][j];
                         new_matrix[i][j].type = 0;
                         new_matrix[new_x][new_y].food = GEN_FOOD_FOXES;
-                        
+                        if (new_matrix[new_x][new_y].gen == GEN_PROC_FOXES){
+                            new_matrix[new_x][new_y].gen = 0;
+                            new_matrix[i][j].type = 2;
+                            new_matrix[i][j].gen = 0;
+                            new_matrix[i][j].food = GEN_FOOD_FOXES;
+                        }
                     }
-                    if (new_matrix[new_x][new_y].gen == GEN_PROC_FOXES){
-                        new_matrix[new_x][new_y].gen = 0;
-                        new_matrix[i][j].type = 2;
-                        new_matrix[i][j].gen = 0;
-                        new_matrix[i][j].food = GEN_FOOD_FOXES;
-                    }
-                    new_matrix[new_x][new_y].gen ++; // fix later
-                    //new_matrix[new_x][new_y].food --; // fix later
-                   
 
                 }else if (move_count2 !=0){
                     int move = (i+j+current_gen) % move_count2;
+                    printf("move %d %d\n",move,move_count2);
                     int count = 0;
                     int new_x = 0;
                     int new_y = 0;
@@ -382,20 +379,18 @@ void move_foxes(Object **matrix){
                     }
                     if (new_matrix[new_x][new_y].type == 2){
                         if (new_matrix[new_x][new_y].gen < matrix[i][j].gen) new_matrix[new_x][new_y] = matrix[i][j];
+                        new_matrix[i][j].type = 0;
                     }else{
                         new_matrix[new_x][new_y] = matrix[i][j];
                         new_matrix[i][j].type = 0;
+                        if (new_matrix[new_x][new_y].gen == GEN_PROC_FOXES){
+                            new_matrix[new_x][new_y].gen = 0;
+                            new_matrix[i][j].type = 2;
+                            new_matrix[i][j].gen = 0;
+                            new_matrix[i][j].food = GEN_FOOD_FOXES;
                     }
-                    if (new_matrix[new_x][new_y].gen == GEN_PROC_FOXES){
-                        new_matrix[new_x][new_y].gen = 0;
-                        new_matrix[i][j].type = 2;
-                        new_matrix[i][j].gen = 0;
-                        new_matrix[i][j].food = GEN_FOOD_FOXES;
                     }
-
-                    new_matrix[new_x][new_y].gen ++; // fix later
-                    new_matrix[new_x][new_y].food --; // fix later
-                    if (new_matrix[new_x][new_y].food == 0) new_matrix[new_x][new_y].type =0;
+                    
                 }
                 
             }
@@ -406,6 +401,19 @@ void move_foxes(Object **matrix){
 
     free(new_rows);
     free(new_matrix);
+}
+
+void add_gen(Object **matrix){
+    for (int i=0; i<R; i++){
+        for (int j=0; j<C ;j++){
+            if (matrix[i][j].type == 1) matrix[i][j].gen ++;
+            else if (matrix[i][j].type == 2){
+                matrix[i][j].gen ++;
+                matrix[i][j].food --;
+                if (matrix[i][j].food == 0) matrix[i][j].type = 0;
+            }
+        }
+    }
 }
 
 int main(){
@@ -464,6 +472,7 @@ int main(){
     print_gen(0, matrix);
     
     for (int i =0; i<N_GEN; i++){
+        add_gen(matrix);
         move_rabbits(matrix);
         move_foxes(matrix);
         current_gen ++;
