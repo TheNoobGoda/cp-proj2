@@ -198,6 +198,7 @@ void move_rabbits(Object **matrix){
 
                     for (int k=0; k<4; k++){
                         if (moves[k] == 1){
+                            
                             if (move == count){
                                 switch (k)
                                 {
@@ -216,9 +217,11 @@ void move_rabbits(Object **matrix){
                                 default:
                                     break;
                                 }
+                                break;
                             }else count ++;
                         }
                     }
+                    
                     if (new_matrix[new_x][new_y].type == 1){
                         if (new_matrix[new_x][new_y].gen < matrix[i][j].gen) new_matrix[new_x][new_y] = matrix[i][j];
                     }else{
@@ -325,6 +328,7 @@ void move_foxes(Object **matrix){
                                 default:
                                     break;
                                 }
+                                break;
                             }else count ++;
                         }
                     }
@@ -333,6 +337,8 @@ void move_foxes(Object **matrix){
                     }else{
                         new_matrix[new_x][new_y] = matrix[i][j];
                         new_matrix[i][j].type = 0;
+                        new_matrix[new_x][new_y].food = GEN_FOOD_FOXES;
+                        
                     }
                     if (new_matrix[new_x][new_y].gen == GEN_PROC_FOXES){
                         new_matrix[new_x][new_y].gen = 0;
@@ -340,9 +346,10 @@ void move_foxes(Object **matrix){
                         new_matrix[i][j].gen = 0;
                         new_matrix[i][j].food = GEN_FOOD_FOXES;
                     }
-
                     new_matrix[new_x][new_y].gen ++; // fix later
-                    new_matrix[new_x][new_y].food --; // fix later
+                    //new_matrix[new_x][new_y].food --; // fix later
+                   
+
                 }else if (move_count2 !=0){
                     int move = (i+j+current_gen) % move_count2;
                     int count = 0;
@@ -369,6 +376,7 @@ void move_foxes(Object **matrix){
                                 default:
                                     break;
                                 }
+                                break;
                             }else count ++;
                         }
                     }
@@ -387,6 +395,7 @@ void move_foxes(Object **matrix){
 
                     new_matrix[new_x][new_y].gen ++; // fix later
                     new_matrix[new_x][new_y].food --; // fix later
+                    if (new_matrix[new_x][new_y].food == 0) new_matrix[new_x][new_y].type =0;
                 }
                 
             }
