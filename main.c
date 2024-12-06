@@ -154,150 +154,39 @@ void move_rabbits(Object **matrix){
                 int moves[4];
                 int move_count =0;
                 
-                if (i != 0 && j !=0 && i != R-1 && j != C-1){
-                    if (matrix[i-1][j].type == 0){
-                        move_count ++;
-                        moves[0] = 1;
-                    } else moves[0] = 0;
-
-                    if (matrix[i][j+1].type == 0){
-                        move_count ++;
-                        moves[1] = 1;
-                    } else moves[1] = 0;
-
-                    if (matrix[i+1][j].type == 0){
-                        move_count ++;
-                        moves[2] = 1;
-                    } else moves[2] = 0;
-
-                    if (matrix[i][j-1].type == 0){
-                        move_count ++;
-                        moves[3] = 1;
-                    } else moves[3] = 0;
-                }else if (i == 0 && j == 0){
-                    moves[0] = 0;
-
-                    if (matrix[i][j+1].type == 0){
-                        move_count ++;
-                        moves[1] = 1;
-                    } else moves[1] = 0;
-
-                    if (matrix[i+1][j].type == 0){
-                        move_count ++;
-                        moves[2] = 1;
-                    } else moves[2] = 0;
-
-                    moves[3] = 0;
-                }else if (i == R-1 && j == C-1){
-                    if (matrix[i-1][j].type == 0){
-                        move_count ++;
-                        moves[0] = 1;
-                    } else moves[0] = 0;
-
-                    moves[1] = 0;
-
-                    moves[2] = 0;
-
-                    if (matrix[i][j-1].type == 0){
-                        move_count ++;
-                        moves[3] = 1;
-                    } else moves[3] = 0;
-                }else if (i == 0 && j == C-1){
-                    moves[0] = 0;
-
-                    moves[1] = 0;
-
-                    if (matrix[i+1][j].type == 0){
-                        move_count ++;
-                        moves[2] = 1;
-                    } else moves[2] = 0;
-
-                    if (matrix[i][j-1].type == 0){
-                        move_count ++;
-                        moves[3] = 1;
-                    } else moves[3] = 0;
-                }else if(i == R-1 && j == 0){
-                    if (matrix[i-1][j].type == 0){
-                        move_count ++;
-                        moves[0] = 1;
-                    } else moves[0] = 0;
-
-                    if (matrix[i][j+1].type == 0){
-                        move_count ++;
-                        moves[1] = 1;
-                    } else moves[1] = 0;
-
-                    moves[2] = 0;
-
-                    moves[3] = 0;
-                }else if (i == 0 && j != 0 && j != C-1){
-                    moves[0] = 0;
-
-                    if (matrix[i][j+1].type == 0){
-                        move_count ++;
-                        moves[1] = 1;
-                    } else moves[1] = 0;
-
-                    if (matrix[i+1][j].type == 0){
-                        move_count ++;
-                        moves[2] = 1;
-                    } else moves[2] = 0;
-
-                    if (matrix[i][j-1].type == 0){
-                        move_count ++;
-                        moves[3] = 1;
-                    } else moves[3] = 0;
-                }else if (i == R-1 && j != 0 && j != C-1){
-                    if (matrix[i-1][j].type == 0){
-                        move_count ++;
-                        moves[0] = 1;
-                    } else moves[0] = 0;
-
-                    if (matrix[i][j+1].type == 0){
-                        move_count ++;
-                        moves[1] = 1;
-                    } else moves[1] = 0;
-
-                    moves[2] = 0;
-
-                    if (matrix[i][j-1].type == 0){
-                        move_count ++;
-                        moves[3] = 1;
-                    } else moves[3] = 0;
-                }else if (j == 0 && i != 0 && i != R-1){
-                    if (matrix[i-1][j].type == 0){
-                        move_count ++;
-                        moves[0] = 1;
-                    } else moves[0] = 0;
-
-                    if (matrix[i][j+1].type == 0){
-                        move_count ++;
-                        moves[1] = 1;
-                    } else moves[1] = 0;
-
-                    if (matrix[i+1][j].type == 0){
-                        move_count ++;
-                        moves[2] = 1;
-                    } else moves[2] = 0;
-
-                    moves[3] = 0;
-                } else if (j == C-1 && i != 0 && i != R-1){
-                    if (matrix[i-1][j].type == 0){
-                        move_count ++;
-                        moves[0] = 1;
-                    } else moves[0] = 0;
-
-                    moves[1] = 0;
-
-                    if (matrix[i+1][j].type == 0){
-                        move_count ++;
-                        moves[2] = 1;
-                    } else moves[2] = 0;
-
-                    if (matrix[i][j-1].type == 0){
-                        move_count ++;
-                        moves[3] = 1;
-                    } else moves[3] = 0;
+                for (int k = 0; k<4; k++){
+                    int x, y;
+                    moves[k] = 0;
+                    switch (k)
+                    {
+                    case 0:
+                        x = i-1;
+                        y = j;
+                        break;
+                    case 1:
+                        x = i;
+                        y = j+1;
+                        break;
+                    case 2:
+                        x = i+1;
+                        y = j;
+                        break;
+                    case 3:
+                        x = i;
+                        y = j-1;
+                        break;
+                    
+                    default:
+                        x = i;
+                        y = j;
+                        break;
+                    }
+                    if (x >= 0 && x < R && y >= 0 && y < C){
+                        if (matrix[x][y].type == 0){
+                            move_count ++;
+                            moves[k] = 1;
+                        }
+                    }
                 }
                 
                 
@@ -371,333 +260,44 @@ void move_foxes(Object **matrix){
                 int moves2[4];
                 int move_count2 = 0;
                 
-                if (i != 0 && j !=0 && i != R-1 && j != C-1){
-                    if (matrix[i-1][j].type == 1){
-                        move_count ++;
-                        moves[0] = 1;
-                    } else if(matrix[i-1][j].type == 0){
-                      moves[0] = 0;
-                      move_count2 ++;
-                      moves2[0] = 1;  
-                    } else {
-                        moves[0] = 0;
-                        moves2[0] = 0;
-                    }
+                for (int k = 0; k<4; k++){
+                    int x, y;
+                    moves[k] = 0;
+                    moves2[k] = 0;
+                    switch (k)
+                    {
+                    case 0:
+                        x = i-1;
+                        y = j;
+                        break;
+                    case 1:
+                        x = i;
+                        y = j+1;
+                        break;
+                    case 2:
+                        x = i+1;
+                        y = j;
+                        break;
+                    case 3:
+                        x = i;
+                        y = j-1;
+                        break;
                     
-
-                    if (matrix[i][j+1].type == 1){
-                        move_count ++;
-                        moves[1] = 1;
-                    } else if(matrix[i][j+1].type == 0){
-                      moves[1] = 0;
-                      move_count2 ++;
-                      moves2[1] = 1;  
-                    } else {
-                        moves[1] = 0;
-                        moves2[1] = 0;
+                    default:
+                        x = i;
+                        y = j;
+                        break;
                     }
-
-                    if (matrix[i+1][j].type == 1){
-                        move_count ++;
-                        moves[2] = 1;
-                    } else if(matrix[i+1][j].type == 0){
-                      moves[2] = 0;
-                      move_count2 ++;
-                      moves2[2] = 1;  
-                    } else {
-                        moves[2] = 0;
-                        moves2[2] = 0;
-                    }
-
-                    if (matrix[i][j-1].type == 1){
-                        move_count ++;
-                        moves[3] = 1;
-                    } else if(matrix[i][j-1].type == 0){
-                      moves[3] = 0;
-                      move_count2 ++;
-                      moves2[3] = 1;  
-                    } else {
-                        moves[3] = 0;
-                        moves2[3] = 0;
-                    }
-                }else if (i == 0 && j == 0){
-                    moves[0] = 0;
-                    moves2[0] = 0;
-
-                    if (matrix[i][j+1].type == 1){
-                        move_count ++;
-                        moves[1] = 1;
-                    } else if(matrix[i][j+1].type == 0){
-                      moves[1] = 0;
-                      move_count2 ++;
-                      moves2[1] = 1;  
-                    } else {
-                        moves[1] = 0;
-                        moves2[1] = 0;
-                    }
-
-                    if (matrix[i+1][j].type == 1){
-                        move_count ++;
-                        moves[2] = 1;
-                    } else if(matrix[i+1][j].type == 0){
-                      moves[2] = 0;
-                      move_count2 ++;
-                      moves2[2] = 1;  
-                    } else {
-                        moves[2] = 0;
-                        moves2[2] = 0;
-                    }
-
-                    moves[3] = 0;
-                    moves2[3] = 0;
-                }else if (i == R-1 && j == C-1){
-                    if (matrix[i-1][j].type == 1){
-                        move_count ++;
-                        moves[0] = 1;
-                    } else if(matrix[i-1][j].type == 0){
-                      moves[0] = 0;
-                      move_count2 ++;
-                      moves2[0] = 1;  
-                    } else {
-                        moves[0] = 0;
-                        moves2[0] = 0;
-                    }
-
-                    moves[1] = 0;
-                    moves2[1] = 0;
-
-                    moves[2] = 0;
-                    moves[2] = 0;
-
-                    if (matrix[i][j-1].type == 1){
-                        move_count ++;
-                        moves[3] = 1;
-                    } else if(matrix[i][j-1].type == 0){
-                      moves[3] = 0;
-                      move_count2 ++;
-                      moves2[3] = 1;  
-                    } else {
-                        moves[3] = 0;
-                        moves2[3] = 0;
-                    }
-                }else if (i == 0 && j == C-1){
-                    moves[0] = 0;
-                    moves2[0] = 0;
-
-                    moves[1] = 0;
-                    moves2[1] = 0;
-
-                    if (matrix[i+1][j].type == 1){
-                        move_count ++;
-                        moves[2] = 1;
-                    } else if(matrix[i+1][j].type == 0){
-                      moves[2] = 0;
-                      move_count2 ++;
-                      moves2[2] = 1;  
-                    } else {
-                        moves[2] = 0;
-                        moves2[2] = 0;
-                    }
-
-                    if (matrix[i][j-1].type == 1){
-                        move_count ++;
-                        moves[3] = 1;
-                    } else if(matrix[i][j-1].type == 0){
-                      moves[3] = 0;
-                      move_count2 ++;
-                      moves2[3] = 1;  
-                    } else {
-                        moves[3] = 0;
-                        moves2[3] = 0;
-                    }
-                }else if(i == R-1 && j == 0){
-                    if (matrix[i-1][j].type == 1){
-                        move_count ++;
-                        moves[0] = 1;
-                    } else if(matrix[i-1][j].type == 0){
-                      moves[0] = 0;
-                      move_count2 ++;
-                      moves2[0] = 1;  
-                    } else {
-                        moves[0] = 0;
-                        moves2[0] = 0;
-                    }
-
-                    if (matrix[i][j+1].type == 1){
-                        move_count ++;
-                        moves[1] = 1;
-                    } else if(matrix[i][j+1].type == 0){
-                      moves[1] = 0;
-                      move_count2 ++;
-                      moves2[1] = 1;  
-                    } else {
-                        moves[1] = 0;
-                        moves2[1] = 0;
-                    }
-
-                    moves[2] = 0;
-                    moves2[2] = 0;
-
-                    moves[3] = 0;
-                    moves2[3] = 0;
-                }else if (i == 0 && j != 0 && j != C-1){
-                    moves[0] = 0;
-                    moves2[0] = 0;
-
-                    if (matrix[i][j+1].type == 1){
-                        move_count ++;
-                        moves[1] = 1;
-                    } else if(matrix[i][j+1].type == 0){
-                      moves[1] = 0;
-                      move_count2 ++;
-                      moves2[1] = 1;  
-                    } else {
-                        moves[1] = 0;
-                        moves2[1] = 0;
-                    }
-
-                    if (matrix[i+1][j].type == 1){
-                        move_count ++;
-                        moves[2] = 1;
-                    } else if(matrix[i+1][j].type == 0){
-                        moves[2] = 0;
-                        move_count2 ++;
-                        moves2[2] = 1;  
-                    } else {
-                        moves[2] = 0;
-                        moves2[2] = 0;
-                    }
-
-                    if (matrix[i][j-1].type == 1){
-                        move_count ++;
-                        moves[3] = 1;
-                    } else if(matrix[i][j-1].type == 0){
-                        moves[3] = 0;
-                        move_count2 ++;
-                        moves2[3] = 1;  
-                    } else {
-                        moves[3] = 0;
-                        moves2[3] = 0;
-                    }
-                }else if (i == R-1 && j != 0 && j != C-1){
-                    if (matrix[i-1][j].type == 1){
-                        move_count ++;
-                        moves[0] = 1;
-                    } else if(matrix[i-1][j].type == 0){
-                        moves[0] = 0;
-                        move_count2 ++;
-                        moves2[0] = 1;  
-                    } else {
-                        moves[0] = 0;
-                        moves2[0] = 0;
-                    }
-
-                    if (matrix[i][j+1].type == 1){
-                        move_count ++;
-                        moves[1] = 1;
-                    } else if(matrix[i][j+1].type == 0){
-                        moves[1] = 0;
-                        move_count2 ++;
-                        moves2[1] = 1;  
-                    } else {
-                        moves[1] = 0;
-                        moves2[1] = 0;
-                    }
-
-                    moves[2] = 0;
-                    moves2[2] = 0;
-
-                    if (matrix[i][j-1].type == 1){
-                        move_count ++;
-                        moves[3] = 1;
-                    } else if(matrix[i][j-1].type == 0){
-                        moves[3] = 0;
-                        move_count2 ++;
-                        moves2[3] = 1;  
-                    } else {
-                        moves[3] = 0;
-                        moves2[3] = 0;
-                    }
-                }else if (j == 0 && i != 0 && i != R-1){
-                    if (matrix[i-1][j].type == 1){
-                        move_count ++;
-                        moves[0] = 1;
-                    } else if(matrix[i-1][j].type == 0){
-                        moves[0] = 0;
-                        move_count2 ++;
-                        moves2[0] = 1;  
-                    } else {
-                        moves[0] = 0;
-                        moves2[0] = 0;
-                    }
-
-                    if (matrix[i][j+1].type == 1){
-                        move_count ++;
-                        moves[1] = 1;
-                    } else if(matrix[i][j+1].type == 0){
-                        moves[1] = 0;
-                        move_count2 ++;
-                        moves2[1] = 1;  
-                    } else {
-                        moves[1] = 0;
-                        moves2[1] = 0;
-                    }
-
-                    if (matrix[i+1][j].type == 1){
-                        move_count ++;
-                        moves[2] = 1;
-                    } else if(matrix[i+1][j].type == 0){
-                        moves[2] = 0;
-                        move_count2 ++;
-                        moves2[2] = 1;  
-                    } else {
-                        moves[2] = 0;
-                        moves2[2] = 0;
-                    }
-
-                    moves[3] = 0;
-                    moves2[3] = 0;
-                } else if (j == C-1 && i != 0 && i != R-1){
-                    if (matrix[i-1][j].type == 1){
-                        move_count ++;
-                        moves[0] = 1;
-                    } else if(matrix[i-1][j].type == 0){
-                        moves[0] = 0;
-                        move_count2 ++;
-                        moves2[0] = 1;  
-                    } else {
-                        moves[0] = 0;
-                        moves2[0] = 0;
-                    }
-
-                    moves[1] = 0;
-                    moves2[1] = 0;
-
-                    if (matrix[i+1][j].type == 1){
-                        move_count ++;
-                        moves[2] = 1;
-                    } else if(matrix[i+1][j].type == 0){
-                        moves[2] = 0;
-                        move_count2 ++;
-                        moves2[2] = 1;  
-                    } else {
-                        moves[2] = 0;
-                        moves2[2] = 0;
-                    }
-
-                    if (matrix[i][j-1].type == 1){
-                        move_count ++;
-                        moves[3] = 1;
-                    } else if(matrix[i][j-1].type == 0){
-                        moves[3] = 0;
-                        move_count2 ++;
-                        moves2[3] = 1;  
-                    } else {
-                        moves[3] = 0;
-                        moves2[3] = 0;
+                    if (x >= 0 && x < R && y >= 0 && y < C){
+                        if (matrix[x][y].type == 1){
+                            move_count ++;
+                            moves[k] = 1;
+                        }else if (matrix[x][y].type == 0){
+                            move_count2 ++;
+                            moves2[k] = 1;
+                        }
                     }
                 }
-                
                 
                 if (move_count != 0){
                     int move = (i+j+current_gen) % move_count;
