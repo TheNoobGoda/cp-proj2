@@ -108,7 +108,6 @@ void print_gen(int g, Object **matrix)
 void store_output(const char *filename, Object **matrix)
 {
     FILE *file;
-    char buffer[256];
     file = fopen(filename, "w");
 
     fprintf(file, "%d %d %d %d %d %d %d\n", GEN_PROC_RABBITS, GEN_PROC_FOXES, GEN_FOOD_FOXES, N_GEN, R, C, N);
@@ -517,9 +516,14 @@ void count_bojects(Object **matrix){
     }
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-    const char *filename = "ecosystem_examples/input10x10";
+    if (argc != 2) {
+        printf("Usage: %s <filename>\n", argv[0]);
+        return 1;
+    }
+
+    const char *filename = argv[1];
     Object *rows;
     Object **matrix;
 
