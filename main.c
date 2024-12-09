@@ -395,7 +395,7 @@ void move_foxes(Object **matrix)
                             if (new_matrix[new_x][new_y].gen == GEN_PROC_FOXES + 1)
                             {
                                 new_matrix[new_x][new_y].gen = 0;
-                                new_matrix[i][j].type = 1;
+                                new_matrix[i][j].type = 2;
                                 new_matrix[i][j].gen = 0;
                             } else new_matrix[i][j].type = 0;
                         }else new_matrix[i][j].type = 0;
@@ -461,7 +461,7 @@ void move_foxes(Object **matrix)
                             if (new_matrix[new_x][new_y].gen == GEN_PROC_FOXES + 1)
                             {
                                 new_matrix[new_x][new_y].gen = 0;
-                                new_matrix[i][j].type = 1;
+                                new_matrix[i][j].type = 2;
                                 new_matrix[i][j].gen = 0;
                             } else new_matrix[i][j].type = 0;
                         }else new_matrix[i][j].type = 0;
