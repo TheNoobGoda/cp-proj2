@@ -151,6 +151,7 @@ void move_rabbits(Object **matrix){
     for (int i=0; i<R; i++){
         for (int j=0; j<C; j++){
             if (matrix[i][j].type == 1){
+                printf("rabbit gen %d\n",matrix[i][j].gen);
                 int moves[4];
                 int move_count =0;
                 
@@ -257,142 +258,145 @@ void move_foxes(Object **matrix){
     for (int i=0; i<R; i++){
         for (int j=0; j<C; j++){
             if (matrix[i][j].type == 2){
-                int moves[4];
-                int move_count =0;
-                int moves2[4];
-                int move_count2 = 0;
-                
-                for (int k = 0; k<4; k++){
-                    int x, y;
-                    moves[k] = 0;
-                    moves2[k] = 0;
-                    switch (k)
-                    {
-                    case 0:
-                        x = i-1;
-                        y = j;
-                        break;
-                    case 1:
-                        x = i;
-                        y = j+1;
-                        break;
-                    case 2:
-                        x = i+1;
-                        y = j;
-                        break;
-                    case 3:
-                        x = i;
-                        y = j-1;
-                        break;
+                printf("fox gen %d\n",matrix[i][j].gen);
+                if (matrix[i][j].food != 0){
+                    int moves[4];
+                    int move_count =0;
+                    int moves2[4];
+                    int move_count2 = 0;
                     
-                    default:
-                        x = i;
-                        y = j;
-                        break;
-                    }
-                    if (x >= 0 && x < R && y >= 0 && y < C){
-                        if (matrix[x][y].type == 1){
-                            move_count ++;
-                            moves[k] = 1;
-                        }else if (matrix[x][y].type == 0){
-                            move_count2 ++;
-                            moves2[k] = 1;
+                    for (int k = 0; k<4; k++){
+                        int x, y;
+                        moves[k] = 0;
+                        moves2[k] = 0;
+                        switch (k)
+                        {
+                        case 0:
+                            x = i-1;
+                            y = j;
+                            break;
+                        case 1:
+                            x = i;
+                            y = j+1;
+                            break;
+                        case 2:
+                            x = i+1;
+                            y = j;
+                            break;
+                        case 3:
+                            x = i;
+                            y = j-1;
+                            break;
+                        
+                        default:
+                            x = i;
+                            y = j;
+                            break;
                         }
-                    }
-                }
-                
-                if (move_count != 0){
-                    int move = (i+j+current_gen) % move_count;
-                    int count = 0;
-                    int new_x = 0;
-                    int new_y = 0;
-
-                    for (int k=0; k<4; k++){
-                        if (moves[k] == 1){
-                            if (move == count){
-                                switch (k)
-                                {
-                                case 0:
-                                    new_x = i-1; new_y = j;
-                                    break;
-                                case 1:
-                                    new_x = i; new_y = j+1;
-                                    break;
-                                case 2:
-                                    new_x = i+1; new_y = j;
-                                    break;
-                                case 3:
-                                    new_x = i; new_y = j-1;
-                                    break;
-                                default:
-                                    break;
-                                }
-                                break;
-                            }else count ++;
+                        if (x >= 0 && x < R && y >= 0 && y < C){
+                            if (matrix[x][y].type == 1){
+                                move_count ++;
+                                moves[k] = 1;
+                            }else if (matrix[x][y].type == 0){
+                                move_count2 ++;
+                                moves2[k] = 1;
+                            }
                         }
-                    }
-                    if (new_matrix[new_x][new_y].type == 2){
-                        if (new_matrix[new_x][new_y].gen < matrix[i][j].gen) new_matrix[new_x][new_y] = matrix[i][j];
-                        new_matrix[i][j].type = 0;
-                    }else{
-                        new_matrix[new_x][new_y] = matrix[i][j];
-                        new_matrix[i][j].type = 0;
-                        new_matrix[new_x][new_y].food = GEN_FOOD_FOXES;
-                        if (new_matrix[new_x][new_y].gen == GEN_PROC_FOXES){
-                            new_matrix[new_x][new_y].gen = 0;
-                            new_matrix[i][j].type = 2;
-                            new_matrix[i][j].gen = 0;
-                            new_matrix[i][j].food = GEN_FOOD_FOXES;
-                        }
-                    }
-
-                }else if (move_count2 !=0){
-                    int move = (i+j+current_gen) % move_count2;
-                    printf("move %d %d\n",move,move_count2);
-                    int count = 0;
-                    int new_x = 0;
-                    int new_y = 0;
-
-                    for (int k=0; k<4; k++){
-                        if (moves2[k] == 1){
-                            if (move == count){
-                                switch (k)
-                                {
-                                case 0:
-                                    new_x = i-1; new_y = j;
-                                    break;
-                                case 1:
-                                    new_x = i; new_y = j+1;
-                                    break;
-                                case 2:
-                                    new_x = i+1; new_y = j;
-                                    break;
-                                case 3:
-                                    new_x = i; new_y = j-1;
-                                    break;
-                                default:
-                                    break;
-                                }
-                                break;
-                            }else count ++;
-                        }
-                    }
-                    if (new_matrix[new_x][new_y].type == 2){
-                        if (new_matrix[new_x][new_y].gen < matrix[i][j].gen) new_matrix[new_x][new_y] = matrix[i][j];
-                        new_matrix[i][j].type = 0;
-                    }else{
-                        new_matrix[new_x][new_y] = matrix[i][j];
-                        new_matrix[i][j].type = 0;
-                        if (new_matrix[new_x][new_y].gen == GEN_PROC_FOXES){
-                            new_matrix[new_x][new_y].gen = 0;
-                            new_matrix[i][j].type = 2;
-                            new_matrix[i][j].gen = 0;
-                            new_matrix[i][j].food = GEN_FOOD_FOXES;
-                    }
                     }
                     
+                    if (move_count != 0){
+                        int move = (i+j+current_gen) % move_count;
+                        int count = 0;
+                        int new_x = 0;
+                        int new_y = 0;
+
+                        for (int k=0; k<4; k++){
+                            if (moves[k] == 1){
+                                if (move == count){
+                                    switch (k)
+                                    {
+                                    case 0:
+                                        new_x = i-1; new_y = j;
+                                        break;
+                                    case 1:
+                                        new_x = i; new_y = j+1;
+                                        break;
+                                    case 2:
+                                        new_x = i+1; new_y = j;
+                                        break;
+                                    case 3:
+                                        new_x = i; new_y = j-1;
+                                        break;
+                                    default:
+                                        break;
+                                    }
+                                    break;
+                                }else count ++;
+                            }
+                        }
+                        if (new_matrix[new_x][new_y].type == 2){
+                            if (new_matrix[new_x][new_y].gen < matrix[i][j].gen) new_matrix[new_x][new_y] = matrix[i][j];
+                            new_matrix[i][j].type = 0;
+                        }else{
+                            new_matrix[new_x][new_y] = matrix[i][j];
+                            new_matrix[i][j].type = 0;
+                            new_matrix[new_x][new_y].food = GEN_FOOD_FOXES;
+                            if (new_matrix[new_x][new_y].gen == GEN_PROC_FOXES){
+                                new_matrix[new_x][new_y].gen = 0;
+                                new_matrix[i][j].type = 2;
+                                new_matrix[i][j].gen = 0;
+                                new_matrix[i][j].food = GEN_FOOD_FOXES;
+                            }
+                        }
+
+                    }else if (move_count2 !=0){
+                        int move = (i+j+current_gen) % move_count2;
+                        int count = 0;
+                        int new_x = 0;
+                        int new_y = 0;
+
+                        for (int k=0; k<4; k++){
+                            if (moves2[k] == 1){
+                                if (move == count){
+                                    switch (k)
+                                    {
+                                    case 0:
+                                        new_x = i-1; new_y = j;
+                                        break;
+                                    case 1:
+                                        new_x = i; new_y = j+1;
+                                        break;
+                                    case 2:
+                                        new_x = i+1; new_y = j;
+                                        break;
+                                    case 3:
+                                        new_x = i; new_y = j-1;
+                                        break;
+                                    default:
+                                        break;
+                                    }
+                                    break;
+                                }else count ++;
+                            }
+                        }
+                        if (new_matrix[new_x][new_y].type == 2){
+                            if (new_matrix[new_x][new_y].gen < matrix[i][j].gen) new_matrix[new_x][new_y] = matrix[i][j];
+                            new_matrix[i][j].type = 0;
+                        }else{
+                            new_matrix[new_x][new_y] = matrix[i][j];
+                            new_matrix[i][j].type = 0;
+                            if (new_matrix[new_x][new_y].gen == GEN_PROC_FOXES){
+                                new_matrix[new_x][new_y].gen = 0;
+                                new_matrix[i][j].type = 2;
+                                new_matrix[i][j].gen = 0;
+                                new_matrix[i][j].food = GEN_FOOD_FOXES;
+                        }
+                        }
+                        
+                    }
+                    
                 }
-                
+                else new_matrix[i][j].type = 0;
             }
         }
     }
@@ -410,7 +414,6 @@ void add_gen(Object **matrix){
             else if (matrix[i][j].type == 2){
                 matrix[i][j].gen ++;
                 matrix[i][j].food --;
-                if (matrix[i][j].food == 0) matrix[i][j].type = 0;
             }
         }
     }
