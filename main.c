@@ -15,6 +15,8 @@ int GEN_PROC_RABBITS, GEN_PROC_FOXES, GEN_FOOD_FOXES, N_GEN, R, C, N;
 int objectCount = 0;
 int current_gen = 0;
 
+int NTHREADS = 4;
+
 void print_gen(int g, Object **matrix)
 {
     // Generation 0
@@ -161,126 +163,126 @@ void move_rabbits(Object **matrix)
     }
     copy_matrix(new_matrix, matrix);
 
-#pragma omp parallel for num_threads(4)
-        for (int i = 0; i < R; i++)
+#pragma omp parallel for num_threads(NTHREADS)
+    for (int i = 0; i < R; i++)
+    {
+        for (int j = 0; j < C; j++)
         {
-            for (int j = 0; j < C; j++)
+            if (matrix[i][j].type == 1)
             {
-                if (matrix[i][j].type == 1)
+                int moves[4];
+                int move_count = 0;
+
+                for (int k = 0; k < 4; k++)
                 {
-                    int moves[4];
-                    int move_count = 0;
+                    int x, y;
+                    moves[k] = 0;
+                    switch (k)
+                    {
+                    case 0:
+                        x = i - 1;
+                        y = j;
+                        break;
+                    case 1:
+                        x = i;
+                        y = j + 1;
+                        break;
+                    case 2:
+                        x = i + 1;
+                        y = j;
+                        break;
+                    case 3:
+                        x = i;
+                        y = j - 1;
+                        break;
+
+                    default:
+                        x = i;
+                        y = j;
+                        break;
+                    }
+                    if (x >= 0 && x < R && y >= 0 && y < C)
+                    {
+                        if (matrix[x][y].type == 0)
+                        {
+                            move_count++;
+                            moves[k] = 1;
+                        }
+                    }
+                }
+
+                if (move_count != 0)
+                {
+                    int move = (i + j + current_gen) % move_count;
+                    int count = 0;
+                    int new_x = 0;
+                    int new_y = 0;
 
                     for (int k = 0; k < 4; k++)
                     {
-                        int x, y;
-                        moves[k] = 0;
-                        switch (k)
+                        if (moves[k] == 1)
                         {
-                        case 0:
-                            x = i - 1;
-                            y = j;
-                            break;
-                        case 1:
-                            x = i;
-                            y = j + 1;
-                            break;
-                        case 2:
-                            x = i + 1;
-                            y = j;
-                            break;
-                        case 3:
-                            x = i;
-                            y = j - 1;
-                            break;
-
-                        default:
-                            x = i;
-                            y = j;
-                            break;
-                        }
-                        if (x >= 0 && x < R && y >= 0 && y < C)
-                        {
-                            if (matrix[x][y].type == 0)
+                            if (move == count)
                             {
-                                move_count++;
-                                moves[k] = 1;
+                                switch (k)
+                                {
+                                case 0:
+                                    new_x = i - 1;
+                                    new_y = j;
+                                    break;
+                                case 1:
+                                    new_x = i;
+                                    new_y = j + 1;
+                                    break;
+                                case 2:
+                                    new_x = i + 1;
+                                    new_y = j;
+                                    break;
+                                case 3:
+                                    new_x = i;
+                                    new_y = j - 1;
+                                    break;
+                                default:
+                                    break;
+                                }
+                                break;
                             }
+                            else
+                                count++;
                         }
                     }
 
-                    if (move_count != 0)
+                    if (new_matrix[new_x][new_y].type == 1)
                     {
-                        int move = (i + j + current_gen) % move_count;
-                        int count = 0;
-                        int new_x = 0;
-                        int new_y = 0;
-
-                        for (int k = 0; k < 4; k++)
-                        {
-                            if (moves[k] == 1)
-                            {
-                                if (move == count)
-                                {
-                                    switch (k)
-                                    {
-                                    case 0:
-                                        new_x = i - 1;
-                                        new_y = j;
-                                        break;
-                                    case 1:
-                                        new_x = i;
-                                        new_y = j + 1;
-                                        break;
-                                    case 2:
-                                        new_x = i + 1;
-                                        new_y = j;
-                                        break;
-                                    case 3:
-                                        new_x = i;
-                                        new_y = j - 1;
-                                        break;
-                                    default:
-                                        break;
-                                    }
-                                    break;
-                                }
-                                else
-                                    count++;
-                            }
-                        }
-
-                        if (new_matrix[new_x][new_y].type == 1)
-                        {
-                            if (new_matrix[new_x][new_y].gen < matrix[i][j].gen)
-                            {
-                                new_matrix[new_x][new_y] = matrix[i][j];
-                                if (new_matrix[new_x][new_y].gen == GEN_PROC_RABBITS + 1)
-                                {
-                                    new_matrix[new_x][new_y].gen = 0;
-                                    new_matrix[i][j].type = 1;
-                                    new_matrix[i][j].gen = 0;
-                                }
-                                else
-                                    new_matrix[i][j].type = 0;
-                            }
-                            else
-                                new_matrix[i][j].type = 0;
-                        }
-                        else
+                        if (new_matrix[new_x][new_y].gen < matrix[i][j].gen)
                         {
                             new_matrix[new_x][new_y] = matrix[i][j];
-                            new_matrix[i][j].type = 0;
                             if (new_matrix[new_x][new_y].gen == GEN_PROC_RABBITS + 1)
                             {
                                 new_matrix[new_x][new_y].gen = 0;
                                 new_matrix[i][j].type = 1;
                                 new_matrix[i][j].gen = 0;
                             }
+                            else
+                                new_matrix[i][j].type = 0;
+                        }
+                        else
+                            new_matrix[i][j].type = 0;
+                    }
+                    else
+                    {
+                        new_matrix[new_x][new_y] = matrix[i][j];
+                        new_matrix[i][j].type = 0;
+                        if (new_matrix[new_x][new_y].gen == GEN_PROC_RABBITS + 1)
+                        {
+                            new_matrix[new_x][new_y].gen = 0;
+                            new_matrix[i][j].type = 1;
+                            new_matrix[i][j].gen = 0;
                         }
                     }
                 }
             }
+        }
     }
 
     copy_matrix(matrix, new_matrix);
@@ -299,6 +301,7 @@ void move_foxes(Object **matrix)
     }
     copy_matrix(new_matrix, matrix);
 
+#pragma omp parallel for num_threads(NTHREADS)
     for (int i = 0; i < R; i++)
     {
         for (int j = 0; j < C; j++)
