@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 typedef struct
 {
@@ -582,6 +583,7 @@ int main(int argc, char *argv[])
     }
     fclose(file);
     print_gen(0, matrix);
+    clock_t start = clock();
 
     for (int i = 0; i < N_GEN; i++)
     {
@@ -594,6 +596,10 @@ int main(int argc, char *argv[])
         print_gen(current_gen, matrix);
 
     }
+
+    clock_t end = clock();
+
+    printf("time %f\n", (double)(end-start) / CLOCKS_PER_SEC);
 
     count_bojects(matrix);
     N_GEN = 0;
