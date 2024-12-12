@@ -257,38 +257,54 @@ void move_rabbits(Object **matrix)
                     if (new_matrix[new_x][new_y].type == 1)
                     {
                         int index = (new_x + new_y) % 100;
-                        omp_set_lock(&locks[index]);
+                        int index2 = (i + j) % 100;
 
                         if (new_matrix[new_x][new_y].gen < matrix[i][j].gen)
                         {
-                            new_matrix[new_x][new_y] = matrix[i][j];
-                            if (new_matrix[new_x][new_y].gen == GEN_PROC_RABBITS + 1)
+#pragma omp critical
                             {
-                                new_matrix[new_x][new_y].gen = 0;
-                                new_matrix[i][j].type = 1;
-                                new_matrix[i][j].gen = 0;
+                                omp_set_lock(&locks[index]);
+                                omp_set_lock(&locks[index2]);
                             }
-                            else
-                                new_matrix[i][j].type = 0;
+
+                            if (new_matrix[new_x][new_y].gen < matrix[i][j].gen)
+                            {
+                                new_matrix[new_x][new_y] = matrix[i][j];
+                                if (new_matrix[new_x][new_y].gen == GEN_PROC_RABBITS + 1)
+                                {
+                                    new_matrix[new_x][new_y].gen = 0;
+                                    new_matrix[i][j].type = 1;
+                                    new_matrix[i][j].gen = 0;
+                                }
+                                else
+                                    new_matrix[i][j].type = 0;
+                            }
+                            omp_unset_lock(&locks[index]);
+                            omp_unset_lock(&locks[index2]);
                         }
                         else
                             new_matrix[i][j].type = 0;
-
-                        omp_unset_lock(&locks[index]);
                     }
                     else
                     {
                         int index = (new_x + new_y) % 100;
-                        omp_set_lock(&locks[index]);
+                        int index2 = (i + j) % 100;
+#pragma omp critical
+                        {
+                            omp_set_lock(&locks[index]);
+                            omp_set_lock(&locks[index2]);
+                        }
                         new_matrix[new_x][new_y] = matrix[i][j];
                         new_matrix[i][j].type = 0;
-                        omp_unset_lock(&locks[index]);
+
                         if (new_matrix[new_x][new_y].gen == GEN_PROC_RABBITS + 1)
                         {
                             new_matrix[new_x][new_y].gen = 0;
                             new_matrix[i][j].type = 1;
                             new_matrix[i][j].gen = 0;
                         }
+                        omp_unset_lock(&locks[index]);
+                        omp_unset_lock(&locks[index2]);
                     }
                 }
             }
@@ -411,8 +427,12 @@ void move_foxes(Object **matrix)
                     if (new_matrix[new_x][new_y].type == 2)
                     {
                         int index = (new_x + new_y) % 100;
-                        omp_set_lock(&locks[index]);
-
+                        int index2 = (i + j) % 100;
+#pragma omp critical
+                        {
+                            omp_set_lock(&locks[index]);
+                            omp_set_lock(&locks[index2]);
+                        }
                         if (new_matrix[new_x][new_y].gen < matrix[i][j].gen || (new_matrix[new_x][new_y].gen == matrix[i][j].gen && new_matrix[new_x][new_y].food < matrix[i][j].food))
                         {
                             new_matrix[new_x][new_y] = matrix[i][j];
@@ -429,17 +449,21 @@ void move_foxes(Object **matrix)
                             new_matrix[i][j].type = 0;
 
                         omp_unset_lock(&locks[index]);
+                        omp_unset_lock(&locks[index2]);
                     }
                     else
                     {
                         int index = (new_x + new_y) % 100;
-                        omp_set_lock(&locks[index]);
+                        int index2 = (i + j) % 100;
+#pragma omp critical
+                        {
+                            omp_set_lock(&locks[index]);
+                            omp_set_lock(&locks[index2]);
+                        }
 
                         new_matrix[new_x][new_y] = matrix[i][j];
                         new_matrix[i][j].type = 0;
                         new_matrix[new_x][new_y].food = GEN_FOOD_FOXES;
-
-                        omp_unset_lock(&locks[index]);
 
                         if (new_matrix[new_x][new_y].gen == GEN_PROC_FOXES + 1)
                         {
@@ -448,6 +472,8 @@ void move_foxes(Object **matrix)
                             new_matrix[i][j].gen = 0;
                             new_matrix[i][j].food = GEN_FOOD_FOXES;
                         }
+                        omp_unset_lock(&locks[index]);
+                        omp_unset_lock(&locks[index2]);
                     }
                 }
                 else if (move_count2 != 0 && matrix[i][j].food != 0)
@@ -493,7 +519,12 @@ void move_foxes(Object **matrix)
                     if (new_matrix[new_x][new_y].type == 2)
                     {
                         int index = (new_x + new_y) % 100;
-                        omp_set_lock(&locks[index]);
+                        int index2 = (i + j) % 100;
+#pragma omp critical
+                        {
+                            omp_set_lock(&locks[index]);
+                            omp_set_lock(&locks[index2]);
+                        }
                         if (new_matrix[new_x][new_y].gen < matrix[i][j].gen || (new_matrix[new_x][new_y].gen == matrix[i][j].gen && new_matrix[new_x][new_y].food < matrix[i][j].food))
                         {
                             new_matrix[new_x][new_y] = matrix[i][j];
@@ -510,15 +541,20 @@ void move_foxes(Object **matrix)
                             new_matrix[i][j].type = 0;
 
                         omp_unset_lock(&locks[index]);
+                        omp_unset_lock(&locks[index2]);
                     }
                     else
                     {
                         int index = (new_x + new_y) % 100;
-                        omp_set_lock(&locks[index]);
+                        int index2 = (i + j) % 100;
+#pragma omp critical
+                        {
+                            omp_set_lock(&locks[index]);
+                            omp_set_lock(&locks[index2]);
+                        }
                         new_matrix[new_x][new_y] = matrix[i][j];
                         new_matrix[i][j].type = 0;
 
-                        omp_unset_lock(&locks[index]);
                         if (new_matrix[new_x][new_y].gen == GEN_PROC_FOXES + 1)
                         {
                             new_matrix[new_x][new_y].gen = 0;
@@ -526,6 +562,8 @@ void move_foxes(Object **matrix)
                             new_matrix[i][j].gen = 0;
                             new_matrix[i][j].food = GEN_FOOD_FOXES;
                         }
+                        omp_unset_lock(&locks[index]);
+                        omp_unset_lock(&locks[index2]);
                     }
                 }
                 else if (matrix[i][j].food == 0)
@@ -570,6 +608,123 @@ void count_bojects(Object **matrix)
                 N++;
         }
     }
+}
+
+void print_gen_to_file(int g, Object **matrix, FILE *f)
+{
+    fprintf(f, "Generation %d", g);
+    fprintf(f, "\n");
+    for (int j = 0; j < C + 2; j++)
+    {
+        fprintf(f, "-");
+    }
+    fprintf(f, "   ");
+    for (int j = 0; j < C + 2; j++)
+    {
+        fprintf(f, "-");
+    }
+    fprintf(f, " ");
+    for (int j = 0; j < C + 2; j++)
+    {
+        fprintf(f, "-");
+    }
+    fprintf(f, "\n");
+
+    for (int i = 0; i < R; i++)
+    {
+        fprintf(f, "|");
+        for (int j = 0; j < C; j++)
+        {
+            char symbol;
+            switch (matrix[i][j].type)
+            {
+            case 0:
+                symbol = ' ';
+                break;
+            case 1:
+                symbol = 'R';
+                break;
+            case 2:
+                symbol = 'F';
+                break;
+            case 3:
+                symbol = '*';
+                break;
+
+            default:
+                symbol = ' ';
+                break;
+            }
+            fprintf(f, "%c", symbol);
+        }
+        fprintf(f, "|   |");
+        for (int j = 0; j < R; j++)
+        {
+            char symbol;
+            switch (matrix[i][j].type)
+            {
+            case 0:
+                symbol = ' ';
+                break;
+            case 1:
+                symbol = matrix[i][j].gen + '0';
+                break;
+            case 2:
+                symbol = matrix[i][j].gen + '0';
+                break;
+            case 3:
+                symbol = '*';
+                break;
+
+            default:
+                symbol = ' ';
+                break;
+            }
+            fprintf(f, "%c", symbol);
+        }
+        fprintf(f, "| |");
+        for (int j = 0; j < R; j++)
+        {
+            char symbol;
+            switch (matrix[i][j].type)
+            {
+            case 0:
+                symbol = ' ';
+                break;
+            case 1:
+                symbol = 'R';
+                break;
+            case 2:
+                symbol = (GEN_FOOD_FOXES - matrix[i][j].food) + '0';
+                break;
+            case 3:
+                symbol = '*';
+                break;
+
+            default:
+                symbol = ' ';
+                break;
+            }
+            fprintf(f, "%c", symbol);
+        }
+        fprintf(f, "|\n");
+    }
+
+    for (int j = 0; j < C + 2; j++)
+    {
+        fprintf(f, "-");
+    }
+    fprintf(f, "   ");
+    for (int j = 0; j < C + 2; j++)
+    {
+        fprintf(f, "-");
+    }
+    fprintf(f, " ");
+    for (int j = 0; j < C + 2; j++)
+    {
+        fprintf(f, "-");
+    }
+    fprintf(f, "\n\n");
 }
 
 int main(int argc, char *argv[])
@@ -641,6 +796,10 @@ int main(int argc, char *argv[])
     // print_gen(0, matrix);
     double start = omp_get_wtime();
 
+    FILE *f;
+    f = fopen("gens", "w");
+    print_gen_to_file(current_gen, matrix, f);
+
     for (int i = 0; i < N_GEN; i++)
     {
         add_gen(matrix);
@@ -650,7 +809,10 @@ int main(int argc, char *argv[])
         move_foxes(matrix);
         current_gen++;
         // print_gen(current_gen, matrix);
+        print_gen_to_file(current_gen, matrix, f);
     }
+
+    fclose(f);
 
     double end = omp_get_wtime();
 
