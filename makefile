@@ -24,7 +24,7 @@ run:
 	./$(TARGET) ecosystem_examples/input$(ARGS)
 
 diff:
-	diff output /home/goda/Desktop/fcup/cp/output$(ARGS)
+	diff output ecosystem_examples/output$(ARGS)
 
 
 # Phony targets

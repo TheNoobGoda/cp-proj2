@@ -254,18 +254,20 @@ void move_rabbits(Object **matrix)
                         }
                     }
 
+                    int index = (new_x + new_y) % 100;
+                    int index2 = (i + j) % 100;
+
+#pragma omp critical
+                    {
+                        omp_set_lock(&locks[index]);
+                        omp_set_lock(&locks[index2]);
+                    }
+
                     if (new_matrix[new_x][new_y].type == 1)
                     {
-                        int index = (new_x + new_y) % 100;
-                        int index2 = (i + j) % 100;
 
                         if (new_matrix[new_x][new_y].gen < matrix[i][j].gen)
                         {
-#pragma omp critical
-                            {
-                                omp_set_lock(&locks[index]);
-                                omp_set_lock(&locks[index2]);
-                            }
 
                             if (new_matrix[new_x][new_y].gen < matrix[i][j].gen)
                             {
@@ -279,21 +281,13 @@ void move_rabbits(Object **matrix)
                                 else
                                     new_matrix[i][j].type = 0;
                             }
-                            omp_unset_lock(&locks[index]);
-                            omp_unset_lock(&locks[index2]);
                         }
                         else
                             new_matrix[i][j].type = 0;
                     }
                     else
                     {
-                        int index = (new_x + new_y) % 100;
-                        int index2 = (i + j) % 100;
-#pragma omp critical
-                        {
-                            omp_set_lock(&locks[index]);
-                            omp_set_lock(&locks[index2]);
-                        }
+
                         new_matrix[new_x][new_y] = matrix[i][j];
                         new_matrix[i][j].type = 0;
 
@@ -303,9 +297,9 @@ void move_rabbits(Object **matrix)
                             new_matrix[i][j].type = 1;
                             new_matrix[i][j].gen = 0;
                         }
-                        omp_unset_lock(&locks[index]);
-                        omp_unset_lock(&locks[index2]);
                     }
+                    omp_unset_lock(&locks[index]);
+                    omp_unset_lock(&locks[index2]);
                 }
             }
         }
@@ -423,16 +417,17 @@ void move_foxes(Object **matrix)
                                 count++;
                         }
                     }
+                    int index = (new_x + new_y) % 100;
+                    int index2 = (i + j) % 100;
+#pragma omp critical
+                    {
+                        omp_set_lock(&locks[index]);
+                        omp_set_lock(&locks[index2]);
+                    }
 
                     if (new_matrix[new_x][new_y].type == 2)
                     {
-                        int index = (new_x + new_y) % 100;
-                        int index2 = (i + j) % 100;
-#pragma omp critical
-                        {
-                            omp_set_lock(&locks[index]);
-                            omp_set_lock(&locks[index2]);
-                        }
+
                         if (new_matrix[new_x][new_y].gen < matrix[i][j].gen || (new_matrix[new_x][new_y].gen == matrix[i][j].gen && new_matrix[new_x][new_y].food < matrix[i][j].food))
                         {
                             new_matrix[new_x][new_y] = matrix[i][j];
@@ -441,25 +436,16 @@ void move_foxes(Object **matrix)
                                 new_matrix[new_x][new_y].gen = 0;
                                 new_matrix[i][j].type = 2;
                                 new_matrix[i][j].gen = 0;
+                                new_matrix[i][j].food = GEN_FOOD_FOXES;
                             }
                             else
                                 new_matrix[i][j].type = 0;
                         }
                         else
                             new_matrix[i][j].type = 0;
-
-                        omp_unset_lock(&locks[index]);
-                        omp_unset_lock(&locks[index2]);
                     }
                     else
                     {
-                        int index = (new_x + new_y) % 100;
-                        int index2 = (i + j) % 100;
-#pragma omp critical
-                        {
-                            omp_set_lock(&locks[index]);
-                            omp_set_lock(&locks[index2]);
-                        }
 
                         new_matrix[new_x][new_y] = matrix[i][j];
                         new_matrix[i][j].type = 0;
@@ -472,9 +458,9 @@ void move_foxes(Object **matrix)
                             new_matrix[i][j].gen = 0;
                             new_matrix[i][j].food = GEN_FOOD_FOXES;
                         }
-                        omp_unset_lock(&locks[index]);
-                        omp_unset_lock(&locks[index2]);
                     }
+                    omp_unset_lock(&locks[index]);
+                    omp_unset_lock(&locks[index2]);
                 }
                 else if (move_count2 != 0 && matrix[i][j].food != 0)
                 {
@@ -482,7 +468,14 @@ void move_foxes(Object **matrix)
                     int count = 0;
                     int new_x = 0;
                     int new_y = 0;
-
+                    if (current_gen == 41 && ((i == 8 && j == 9) || (i == 10 && j == 9)))
+                    {
+                        printf("i %d j %d move_count %d move_count2 %d move %d gen %d food %d\n", i, j, move_count, move_count2, move, matrix[i][j].gen, matrix[i][j].food);
+                    }
+                    if (current_gen == 5 && ((i == 17 && j == 7) || (i == 18 && j == 8)))
+                    {
+                        printf("i %d j %d move_count %d move_count2 %d move %d gen %d food %d\n", i, j, move_count, move_count2, move, matrix[i][j].gen, matrix[i][j].food);
+                    }
                     for (int k = 0; k < 4; k++)
                     {
                         if (moves2[k] == 1)
@@ -516,15 +509,16 @@ void move_foxes(Object **matrix)
                                 count++;
                         }
                     }
+                    int index = (new_x + new_y) % 100;
+                    int index2 = (i + j) % 100;
+#pragma omp critical
+                    {
+                        omp_set_lock(&locks[index]);
+                        omp_set_lock(&locks[index2]);
+                    }
                     if (new_matrix[new_x][new_y].type == 2)
                     {
-                        int index = (new_x + new_y) % 100;
-                        int index2 = (i + j) % 100;
-#pragma omp critical
-                        {
-                            omp_set_lock(&locks[index]);
-                            omp_set_lock(&locks[index2]);
-                        }
+
                         if (new_matrix[new_x][new_y].gen < matrix[i][j].gen || (new_matrix[new_x][new_y].gen == matrix[i][j].gen && new_matrix[new_x][new_y].food < matrix[i][j].food))
                         {
                             new_matrix[new_x][new_y] = matrix[i][j];
@@ -533,25 +527,17 @@ void move_foxes(Object **matrix)
                                 new_matrix[new_x][new_y].gen = 0;
                                 new_matrix[i][j].type = 2;
                                 new_matrix[i][j].gen = 0;
+                                new_matrix[i][j].food = GEN_FOOD_FOXES;
                             }
                             else
                                 new_matrix[i][j].type = 0;
                         }
                         else
                             new_matrix[i][j].type = 0;
-
-                        omp_unset_lock(&locks[index]);
-                        omp_unset_lock(&locks[index2]);
                     }
                     else
                     {
-                        int index = (new_x + new_y) % 100;
-                        int index2 = (i + j) % 100;
-#pragma omp critical
-                        {
-                            omp_set_lock(&locks[index]);
-                            omp_set_lock(&locks[index2]);
-                        }
+
                         new_matrix[new_x][new_y] = matrix[i][j];
                         new_matrix[i][j].type = 0;
 
@@ -562,9 +548,10 @@ void move_foxes(Object **matrix)
                             new_matrix[i][j].gen = 0;
                             new_matrix[i][j].food = GEN_FOOD_FOXES;
                         }
-                        omp_unset_lock(&locks[index]);
-                        omp_unset_lock(&locks[index2]);
                     }
+
+                    omp_unset_lock(&locks[index]);
+                    omp_unset_lock(&locks[index2]);
                 }
                 else if (matrix[i][j].food == 0)
                     new_matrix[i][j].type = 0;
