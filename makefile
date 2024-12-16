@@ -24,7 +24,7 @@ run:
 	./$(TARGET) ecosystem_examples/input$(ARGS)
 
 diff:
-	diff output ecosystem_examples/output$(ARGS)
+	cmp output output$(ARGS)
 
 
 # Phony targets
