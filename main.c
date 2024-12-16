@@ -9,7 +9,6 @@ typedef struct
     int type;
     int gen;
     int food;
-    int proc;
 } Object;
 
 #ifdef _OPENMP
@@ -281,8 +280,7 @@ void move_rabbits(Object **matrix)
                                 {
                                     new_matrix[i][j].type = 1;
                                     new_matrix[i][j].gen = 0;
-                                    new_matrix[i][j].proc = 0;
-                                    new_matrix[new_x][new_y].proc = 1;
+                                    new_matrix[new_x][new_y].gen = 0;
                                 }
                                 else
                                     new_matrix[i][j].type = 0;
@@ -291,7 +289,6 @@ void move_rabbits(Object **matrix)
                         else if (matrix[i][j].gen >= GEN_PROC_RABBITS + 1)
                         {
                             new_matrix[i][j].gen = 0;
-                            new_matrix[i][j].proc = 0;
                         }
                         else
                             new_matrix[i][j].type = 0;
@@ -306,8 +303,7 @@ void move_rabbits(Object **matrix)
                         {
                             new_matrix[i][j].type = 1;
                             new_matrix[i][j].gen = 0;
-                            new_matrix[i][j].proc = 0;
-                            new_matrix[new_x][new_y].proc = 1;
+                            new_matrix[new_x][new_y].gen = 0;
                         }
                     }
 #ifdef _OPENMP
@@ -447,13 +443,13 @@ void move_foxes(Object **matrix)
                             {
 
                                 new_matrix[new_x][new_y] = matrix[i][j];
+                                new_matrix[new_x][new_y].food = 0;
                                 if (new_matrix[new_x][new_y].gen >= GEN_PROC_FOXES + 1)
                                 {
                                     new_matrix[i][j].type = 2;
                                     new_matrix[i][j].gen = 0;
                                     new_matrix[i][j].food = 0;
-                                    new_matrix[i][j].proc = 0;
-                                    new_matrix[new_x][new_y].proc = 1;
+                                    new_matrix[new_x][new_y].gen = 0;
                                 }
                                 else
                                     new_matrix[i][j].type = 0;
@@ -461,8 +457,6 @@ void move_foxes(Object **matrix)
                             else if (matrix[i][j].gen >= GEN_PROC_FOXES + 1)
                             {
                                 new_matrix[i][j].gen = 0;
-                                new_matrix[i][j].food = 0;
-                                new_matrix[i][j].proc = 0;
                             }
                             else
                                 new_matrix[i][j].type = 0;
@@ -479,8 +473,7 @@ void move_foxes(Object **matrix)
                                 new_matrix[i][j].type = 2;
                                 new_matrix[i][j].gen = 0;
                                 new_matrix[i][j].food = 0;
-                                new_matrix[i][j].proc = 0;
-                                new_matrix[new_x][new_y].proc = 1;
+                                new_matrix[new_x][new_y].gen = 0;
                             }
                         }
                     }
@@ -552,8 +545,7 @@ void move_foxes(Object **matrix)
                                     new_matrix[i][j].type = 2;
                                     new_matrix[i][j].gen = 0;
                                     new_matrix[i][j].food = 0;
-                                    new_matrix[i][j].proc = 0;
-                                    new_matrix[new_x][new_y].proc = 1;
+                                    new_matrix[new_x][new_y].gen = 0;
                                 }
                                 else
                                     new_matrix[i][j].type = 0;
@@ -562,7 +554,6 @@ void move_foxes(Object **matrix)
                             {
                                 new_matrix[i][j].gen = 0;
                                 new_matrix[i][j].food = 0;
-                                new_matrix[i][j].proc = 0;
                             }
                             else
                                 new_matrix[i][j].type = 0;
@@ -579,8 +570,7 @@ void move_foxes(Object **matrix)
                                 new_matrix[i][j].type = 2;
                                 new_matrix[i][j].gen = 0;
                                 new_matrix[i][j].food = 0;
-                                new_matrix[i][j].proc = 0;
-                                new_matrix[new_x][new_y].proc = 1;
+                                new_matrix[new_x][new_y].gen = 0;
                             }
                         }
 #ifdef _OPENMP
@@ -612,6 +602,7 @@ void move_foxes(Object **matrix)
 
 void add_gen(Object **matrix)
 {
+    #pragma omp parallel for
     for (int i = 0; i < R; i++)
     {
         for (int j = 0; j < C; j++)
@@ -629,22 +620,7 @@ void add_gen(Object **matrix)
     }
 }
 
-void reset_gen(Object **matrix)
-{
-    for (int i = 0; i < R; i++)
-    {
-        for (int j = 0; j < C; j++)
-        {
-            if (matrix[i][j].proc == 1)
-            {
-                matrix[i][j].gen = 0;
-                matrix[i][j].proc = 0;
-            }
-        }
-    }
-}
-
-void count_bojects(Object **matrix)
+void count_objects(Object **matrix)
 {
     N = 0;
     for (int i = 0; i < R; i++)
@@ -826,14 +802,12 @@ int main(int argc, char *argv[])
             {
                 matrix[x][y].type = 1;
                 matrix[x][y].gen = 0;
-                matrix[x][y].proc = 0;
             }
             else if (strcmp(type, "FOX") == 0)
             {
                 matrix[x][y].type = 2;
                 matrix[x][y].gen = 0;
                 matrix[x][y].food = 0;
-                matrix[x][y].proc = 0;
             }
             else if (strcmp(type, "ROCK") == 0)
             {
@@ -850,21 +824,20 @@ int main(int argc, char *argv[])
     }
 #endif
 
-    FILE *f;
-    f = fopen("gens", "w");
-    print_gen_to_file(current_gen, matrix, f);
+    // FILE *f;
+    // f = fopen("gens", "w");
+    // print_gen_to_file(current_gen, matrix, f);
 
     for (int i = 0; i < N_GEN; i++)
     {
         add_gen(matrix);
         move_rabbits(matrix);
         move_foxes(matrix);
-        reset_gen(matrix);
         current_gen++;
-        print_gen_to_file(current_gen, matrix, f);
+        // print_gen_to_file(current_gen, matrix, f);
     }
 
-    fclose(f);
+    // fclose(f);
 #ifdef _OPENMP
     for (int i = 0; i < 100; i++)
     {
@@ -876,7 +849,7 @@ int main(int argc, char *argv[])
     printf("time %f\n", end - start);
 #endif
 
-    count_bojects(matrix);
+    count_objects(matrix);
     N_GEN = 0;
     store_output("output", matrix);
     free(matrix);
