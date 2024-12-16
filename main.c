@@ -752,11 +752,6 @@ void print_gen_to_file(int g, Object **matrix, FILE *f)
 
 int main(int argc, char *argv[])
 {
-#ifdef _OPENMP
-    printf("yes\n");
-#else
-    printf("no\n");
-#endif
     if (argc != 2)
     {
         printf("Usage: %s <filename>\n", argv[0]);
@@ -823,6 +818,10 @@ int main(int argc, char *argv[])
     fclose(file);
 #ifdef _OPENMP
     double start = omp_get_wtime();
+     for (int i = 0; i < 100; i++)
+    {
+        omp_init_lock(&locks[i]);
+    }
 #endif
 
     FILE *f;
@@ -841,6 +840,11 @@ int main(int argc, char *argv[])
 
     fclose(f);
 #ifdef _OPENMP
+    for (int i = 0; i < 100; i++)
+    {
+        omp_destroy_lock(&locks[i]);
+    }
+
     double end = omp_get_wtime();
 
     printf("time %f\n", end - start);
